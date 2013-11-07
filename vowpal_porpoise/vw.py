@@ -144,7 +144,7 @@ class VW:
         if self.mem                 is not None: l.append('--mem=%d' % self.mem)
         if self.audit:                           l.append('--audit')
         if self.bfgs:                            l.append('--bfgs')
-        if self.adaptive:                        l.append('--adaptive')
+        if self.adaptive:                        l.append('--exact_adaptive_norm')
         if self.nn                  is not None: l.append('--nn=%d' % self.nn)
         return ' '.join(l)
 

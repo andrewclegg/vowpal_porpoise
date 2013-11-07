@@ -175,9 +175,32 @@ def _as_vw_string(x, y=None):
     x = " ".join(["%s:%f" % (key, value) for (key, value) in x.items()])
     return result + " | " + x
 
+def _as_vw_strings(X,y=None):
+   if (isinstance(X[0], dict)):
+      return _as_vw_strings_asdict(X,y)
+   else:
+      return _as_vw_strings_asarray(X,y) 
 
-def _as_vw_strings(X, y=None):
+def _as_vw_strings_asarray(X,y=None):
+    return examples2vw(X)
+
+def _as_vw_strings_asdict(X, y=None):
     n_samples = np.shape(X)[0]
     if y is None:
-        y = np.ones(n_samples)
+       y = np.ones(n_samples)
     return [_as_vw_string(X[i], y[i]) for i in range(n_samples)]
+
+def __examples2vw(examples):
+    fv, tag, word = examples[0]
+    indices = [str(x)+":" for x in  range(len(fv))]
+    lines = []
+    for example in examples:
+      fv, tag, word = example
+      fv_ = ' '.join([indices[i]+str(v) for i,v in enumerate(fv)])
+      line = u"{} 1.0 {} | {}".format(tag, word, fv_)
+      lines.append(line)
+    return lines
+
+def examples2vw(examples):
+  return __examples2vw(examples)
+
