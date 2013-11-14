@@ -146,6 +146,7 @@ class VW:
         if self.bfgs:                            l.append('--bfgs')
         if self.adaptive:                        l.append('--exact_adaptive_norm')
         if self.nn                  is not None: l.append('--nn=%d' % self.nn)
+        l.append('--random_weights %d' % 1)
         return ' '.join(l)
 
     def vw_train_command(self, cache_file, model_file):
