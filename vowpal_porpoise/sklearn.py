@@ -45,6 +45,7 @@ class _VW(sklearn.base.BaseEstimator):
                  incremental=False,
                  mem=None,
                  nn=None,
+                 raw=None
                  ):
         self.logger = logger
         self.vw = vw
@@ -76,6 +77,7 @@ class _VW(sklearn.base.BaseEstimator):
         self.incremental = incremental
         self.mem = mem
         self.nn = nn
+        self.raw = raw
 
     def fit(self, X, y):
         """Fit Vowpal Wabbit
@@ -120,7 +122,8 @@ class _VW(sklearn.base.BaseEstimator):
             old_model=self.old_model,
             incremental=self.incremental,
             mem=self.mem,
-            nn=self.nn
+            nn=self.nn,
+            raw=self.raw
         )
 
         # add examples to model
@@ -151,6 +154,26 @@ class _VW(sklearn.base.BaseEstimator):
 
         return predictions
 
+    def predict_proba(self, X):
+        """Fit Vowpal Wabbit
+
+        Parameters
+        ----------
+        X: [{<feature name>: <feature value>}]
+            input features
+        """
+        examples = _as_vw_strings(X)
+
+        # add test examples to model
+        with self.vw_.predicting():
+            for instance in examples:
+                self.vw_.push_instance(instance)
+
+        # read out predictions
+        predictions = np.asarray(list(self.vw_.read_predictions_()))
+
+        return predictions
+
 
 class VW_Regressor(sklearn.base.RegressorMixin, _VW):
     pass
@@ -160,6 +183,10 @@ class VW_Classifier(sklearn.base.ClassifierMixin, _VW):
 
     def predict(self, X):
         result = super(VW_Classifier, self).predict(X)
+        return result
+
+    def predict_proba(self, X):
+        result = super(VW_Classifier, self).predict_proba(X)
         return result
 
 

@@ -42,6 +42,7 @@ class VW:
                  incremental=False,
                  mem=None,
                  nn=None,
+                 raw=None,
                  **kwargs):
         assert moniker and passes
 
@@ -102,6 +103,7 @@ class VW:
         self.bfgs = bfgs
         self.mem = mem
         self.nn = nn
+        self.raw = raw
 
         # Do some sanity checking for compatability between models
         if self.lda:
@@ -159,7 +161,10 @@ class VW:
                     % (self.passes, cache_file, model_file)
 
     def vw_test_command(self, model_file, prediction_file):
-        return self.vw_base_command([self.vw]) + ' -t -i %s -p %s' % (model_file, prediction_file)
+        if self.raw is None:
+           return self.vw_base_command([self.vw]) + ' -t -i %s -p %s' % (model_file, prediction_file)
+        else:
+           return self.vw_base_command([self.vw]) + ' -t -i %s -r %s' % (model_file, prediction_file)
 
     def vw_test_command_library(self, model_file):
         return self.vw_base_command([]) + ' -t -i %s' % (model_file)
@@ -236,6 +241,8 @@ class VW:
     def parse_prediction(self, p):
         if self.lda:
             return map(float, p.split())
+        if self.raw:
+            return p
         else:
             return float(p)
 
