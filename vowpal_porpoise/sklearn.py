@@ -209,25 +209,18 @@ def _as_vw_strings(X,y=None):
       return _as_vw_strings_asarray(X,y) 
 
 def _as_vw_strings_asarray(X,y=None):
-    return examples2vw(X)
+    fv = X[0]
+    indices = [str(x)+":" for x in  range(len(fv))]
+    lines = []
+    for i, x in enumerate(X):
+      tag = y[i]
+      fv_ = ' '.join([indices[i]+str(v) for i,v in enumerate(x)])
+      line = "{} 1.0 | {}".format(tag, fv_)
+      lines.append(line)
+    return lines
 
 def _as_vw_strings_asdict(X, y=None):
     n_samples = np.shape(X)[0]
     if y is None:
        y = np.ones(n_samples)
     return [_as_vw_string(X[i], y[i]) for i in range(n_samples)]
-
-def __examples2vw(examples):
-    fv, tag, word = examples[0]
-    indices = [str(x)+":" for x in  range(len(fv))]
-    lines = []
-    for example in examples:
-      fv, tag, word = example
-      fv_ = ' '.join([indices[i]+str(v) for i,v in enumerate(fv)])
-      line = u"{} 1.0 {} | {}".format(tag, word, fv_)
-      lines.append(line)
-    return lines
-
-def examples2vw(examples):
-  return __examples2vw(examples)
-
