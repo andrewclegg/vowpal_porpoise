@@ -213,7 +213,10 @@ def _as_vw_strings_asarray(X,y=None):
     indices = [str(x)+":" for x in  range(len(fv))]
     lines = []
     for i, x in enumerate(X):
-      tag = y[i]
+      if y == None:
+        tag = 1
+      else:
+        tag = y[i]
       fv_ = ' '.join([indices[i]+str(v) for i,v in enumerate(x)])
       line = "{} 1.0 | {}".format(tag, fv_)
       lines.append(line)
