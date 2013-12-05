@@ -15,7 +15,6 @@ from sklearn.metrics import f1_score, confusion_matrix
 from vowpal_porpoise.sklearn import VW_Classifier
 
 
-sigmoid = lambda x: 1/(1+exp(-x))
 class Array2Dict(TransformerMixin):
 
     def fit(self, X, y=None):
@@ -45,22 +44,17 @@ def main():
     y_train, y_test = y[:i], y[i:]
 
     # do the actual learning
-    m =  VW_Classifier(loss='logistic', moniker='example_sklearn', passes=10, silent=True, learning_rate=10, raw=True, oaa = 10)
+    m =  VW_Classifier(loss='logistic', moniker='example_sklearn', passes=10, silent=True, learning_rate=10, raw = True, oaa = 10)
     m.fit(X_train, y_train)
-    # print confusion matrix on test data
-    y_est = m.predict_proba(X_test)
-    lines = y_est
-    #print y_est
-    probs = []
-    for i, line in enumerate(lines):
-      line = line.split()
-      labels, vs = zip(*[[float(x) for x in l.split(':')] for l in line[:]])
-      probs__ = sigmoid(asarray(vs))
-      probs_ = probs__/probs__.sum()
-      probs.append(probs_)
 
-    probs = np.asarray(probs)
-    print probs
+    # print confusion matrix on test data
+    y_pred = m.predict(X_test)
+    print "F1 score on test is", f1_score(y_pred, y_test)
+
+    # The raw probabilities are as follows
+    y_prob = m.predict_proba(X_test)
+    print "The raw probabilities for each test example are", y_prob
+    
 
 if __name__ == '__main__':
     main()

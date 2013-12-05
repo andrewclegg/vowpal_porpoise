@@ -45,7 +45,7 @@ class _VW(sklearn.base.BaseEstimator):
                  incremental=False,
                  mem=None,
                  nn=None,
-                 raw=None
+                 raw=False
                  ):
         self.logger = logger
         self.vw = vw
@@ -78,6 +78,10 @@ class _VW(sklearn.base.BaseEstimator):
         self.mem = mem
         self.nn = nn
         self.raw = raw
+
+        if(self.raw):
+          assert(self.oaa), "Raw options is supported only with OAA"
+          assert(self.loss == 'logistic'), "Raw option is only supported with logistic loss"
 
     def fit(self, X, y):
         """Fit Vowpal Wabbit
@@ -134,7 +138,7 @@ class _VW(sklearn.base.BaseEstimator):
         # learning done after "with" statement
         return self
 
-    def predict(self, X):
+    def predict_helper(self, X):
         """Fit Vowpal Wabbit
 
         Parameters
@@ -151,6 +155,23 @@ class _VW(sklearn.base.BaseEstimator):
 
         # read out predictions
         predictions = np.asarray(list(self.vw_.read_predictions_()))
+        return predictions
+
+    def predict(self, X):
+        """Fit Vowpal Wabbit
+
+        Parameters
+        ----------
+        X: [{<feature name>: <feature value>}]
+            input features
+        """
+        predictions = self.predict_helper(X)
+        if (self.raw): # If we have output raw predictions, convert to labels
+          assert(self.oaa)
+          assert(self.loss == 'logistic')
+          prob_predictions = self.PredictionsToProbs(predictions)
+          labels_pred = np.argmax(prob_predictions, axis = 1) + 1
+          return labels_pred
 
         return predictions
 
@@ -162,17 +183,22 @@ class _VW(sklearn.base.BaseEstimator):
         X: [{<feature name>: <feature value>}]
             input features
         """
-        examples = _as_vw_strings(X)
+        assert(self.raw), "Cannot call predict_proba if not configured with 'raw' option"
+        predictions = self.predict_helper(X)
+        return self.PredictionsToProbs(predictions)
 
-        # add test examples to model
-        with self.vw_.predicting():
-            for instance in examples:
-                self.vw_.push_instance(instance)
+    def PredictionsToProbs(self, predictions):
+        probs = []
+        for i, prediction in enumerate(predictions):
+            prediction = prediction.split()
+            labels, vs = zip(*[[float(x) for x in l.split(':')] for l in prediction[:]])
+            probs__ = sigmoid(np.asarray(vs))
+            probs_ = probs__/probs__.sum()
+            probs.append(probs_) 
+        probs = np.asarray(probs)
+        return probs
 
-        # read out predictions
-        predictions = np.asarray(list(self.vw_.read_predictions_()))
-
-        return predictions
+sigmoid = lambda x: 1/(1+np.exp(-x))
 
 
 class VW_Regressor(sklearn.base.RegressorMixin, _VW):

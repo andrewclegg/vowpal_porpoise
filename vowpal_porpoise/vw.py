@@ -42,7 +42,7 @@ class VW:
                  incremental=False,
                  mem=None,
                  nn=None,
-                 raw=None,
+                 raw=False,
                  **kwargs):
         assert moniker and passes
 
@@ -138,7 +138,7 @@ class VW:
         if self.lda_rho             is not None: l.append('--lda_rho=%f' % self.lda_rho)
         if self.lda_alpha           is not None: l.append('--lda_alpha=%f' % self.lda_alpha)
         if self.minibatch           is not None: l.append('--minibatch=%d' % self.minibatch)
-        if self.oaa                 is not None: l.append('--ect=%d' % self.oaa)
+        if self.oaa                 is not None: l.append('--oaa=%d' % self.oaa)
         if self.unique_id           is not None: l.append('--unique_id=%d' % self.unique_id)
         if self.total               is not None: l.append('--total=%d' % self.total)
         if self.node                is not None: l.append('--node=%d' % self.node)
@@ -161,7 +161,7 @@ class VW:
                     % (self.passes, cache_file, model_file)
 
     def vw_test_command(self, model_file, prediction_file):
-        if self.raw is None:
+        if self.raw is False:
            return self.vw_base_command([self.vw]) + ' -t -i %s -p %s' % (model_file, prediction_file)
         else:
            return self.vw_base_command([self.vw]) + ' -t -i %s -r %s' % (model_file, prediction_file)
