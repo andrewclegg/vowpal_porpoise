@@ -12,8 +12,8 @@ class Instance(object):
         raise Exception('Not yet implemented: Instance.featurize')
 
     def __repr__(self):
-        return u'%s %f |%s' % (str(self.label), self.weight, \
-                u' |'.join([u'%s %s' % (namespace, feats) for namespace, feats in self.featurize().iteritems()]))
+        return '%s %f |%s' % (str(self.label), self.weight, \
+                ' |'.join(['%s %s' % (namespace, feats) for namespace, feats in self.featurize().items()]))
 
 
 class SimpleInstance(Instance):
@@ -33,30 +33,30 @@ class SimpleModel(object):
         """
         Trains the model on the given data stream.
         """
-        print '%s: training' % (self.moniker)
+        print('%s: training' % (self.moniker))
         with self.model.training():
             seen = 0
             for instance in instance_stream:
                 self.model.push_instance(instance)
                 seen += 1
                 if seen % 10000 == 0:
-                    print 'streamed %d instances...' % seen
-            print 'done streaming.'
-        print '%s: trained on %d data points' % (self.moniker, seen)
+                    print('streamed %d instances...' % seen)
+            print('done streaming.')
+        print('%s: trained on %d data points' % (self.moniker, seen))
         return self
 
     def predict_library(self, instance_stream):
-        print '%s: predicting' % self.moniker
+        print('%s: predicting' % self.moniker)
         with self.model.predicting_library():
             seen = 0
             for instance in instance_stream:
                 yield instance, self.model.push_instance(instance)
                 seen += 1
 
-        print '%s: predicted for %d data points' % (self.moniker, seen)
+        print('%s: predicted for %d data points' % (self.moniker, seen))
 
     def predict(self, instance_stream):
-        print '%s: predicting' % self.moniker
+        print('%s: predicting' % self.moniker)
         instances = []
         with self.model.predicting():
             seen = 0
@@ -65,12 +65,12 @@ class SimpleModel(object):
                 instances.append(instance)
                 seen += 1
 
-        print '%s: predicted for %d data points' % (self.moniker, seen)
+        print('%s: predicted for %d data points' % (self.moniker, seen))
         predictions = list(self.model.read_predictions_())
         if seen != len(predictions):
             raise Exception("Number of labels and predictions do not match!  (%d vs %d)" % \
                 (seen, len(predictions)))
-        return itertools.izip(instances, predictions)
+        return zip(instances, predictions)
 
 
 if __name__ == '__main__':
@@ -84,4 +84,4 @@ if __name__ == '__main__':
             ]
 
     for (instance, prediction) in SimpleModel('example1').train(instances).predict(instances):
-        print prediction, instance
+        print(prediction, instance)

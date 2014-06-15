@@ -1,2 +1,2 @@
-from vw import *
-from vp_utils import *
+from .vw import *
+from .vp_utils import *

@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 import sklearn.base
 import numpy as np
 
@@ -191,7 +191,7 @@ class _VW(sklearn.base.BaseEstimator):
         probs = []
         for i, prediction in enumerate(predictions):
             prediction = prediction.split()
-            labels, vs = zip(*[[float(x) for x in l.split(':')] for l in prediction[:]])
+            labels, vs = list(zip(*[[float(x) for x in l.split(':')] for l in prediction[:]]))
             probs__ = sigmoid(np.asarray(vs))
             probs_ = probs__/probs__.sum()
             probs.append(probs_) 
@@ -225,7 +225,7 @@ def _as_vw_string(x, y=None):
     y : int or float
     """
     result = str(y)
-    x = " ".join(["%s:%f" % (key, value) for (key, value) in x.items()])
+    x = " ".join(["%s:%f" % (key, value) for (key, value) in list(x.items())])
     return result + " | " + x
 
 def _as_vw_strings(X,y=None):

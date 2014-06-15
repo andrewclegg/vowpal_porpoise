@@ -49,11 +49,11 @@ def main():
 
     # print confusion matrix on test data
     y_pred = m.predict(X_test)
-    print "F1 score on test is", f1_score(y_pred, y_test)
+    print("F1 score on test is", f1_score(y_pred, y_test))
 
     # The raw probabilities are as follows
     y_prob = m.predict_proba(X_test)
-    print "The raw probabilities for each test example are", y_prob
+    print("The raw probabilities for each test example are", y_prob)
     
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import sys
 import subprocess
 import shlex
 import tempfile
-from vp_utils import safe_remove, VPLogger
+from .vp_utils import safe_remove, VPLogger
 
 class VW:
     def __init__(self,
@@ -240,7 +240,7 @@ class VW:
 
     def parse_prediction(self, p):
         if self.lda:
-            return map(float, p.split())
+            return list(map(float, p.split()))
         if self.raw:
             return p
         else:

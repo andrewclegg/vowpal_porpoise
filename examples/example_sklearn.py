@@ -57,12 +57,12 @@ def main():
     # print out results from cross-validation
     estimator = gs.best_estimator_
     score = gs.best_score_
-    print 'Achieved a F1 score of %f using l2 == %f during cross-validation' % (score, estimator.l2)
+    print('Achieved a F1 score of %f using l2 == %f during cross-validation' % (score, estimator.l2))
 
     # print confusion matrix on test data
     y_est = estimator.fit(X_train, y_train).predict(X_test)
-    print 'Confusion Matrix:'
-    print confusion_matrix(y_test, y_est)
+    print('Confusion Matrix:')
+    print(confusion_matrix(y_test, y_est))
 
 
 if __name__ == '__main__':

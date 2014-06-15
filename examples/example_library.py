@@ -1,11 +1,11 @@
 import gzip
 import vw_c
 import random
-from itertools import ifilter, imap, izip, repeat
+from itertools import repeat
 
 
 def stream_instances(positive_bag, negative_bag):
-    instances = list(izip(repeat(1), positive_bag)) + list(izip(repeat(0), negative_bag))
+    instances = list(zip(repeat(1), positive_bag)) + list(zip(repeat(0), negative_bag))
     random.shuffle(instances)
 
     for l in instances:
@@ -48,8 +48,8 @@ def evaluate(train_data, test_data, passes, params):
             test_correct += 1
         test_total += 1
 
-    print 'TRAIN: %d / %d (%.3f%%) TEST: %d / %d (%.3f%%)' % (train_correct, train_total, train_correct / float(train_total) * 100, \
-            test_correct, test_total, test_correct / float(test_total) * 100)
+    print('TRAIN: %d / %d (%.3f%%) TEST: %d / %d (%.3f%%)' % (train_correct, train_total, train_correct / float(train_total) * 100, \
+            test_correct, test_total, test_correct / float(test_total) * 100))
     b.finish()
 
 
@@ -65,8 +65,8 @@ def train_test_split(positive_bag, negative_bag, test_prop):
 
 
 if __name__ == '__main__':
-    positive_bag = list(ifilter(lambda x: x, imap(clean, gzip.open('training_data/aiw.txt.gz'))))
-    negative_bag = list(ifilter(lambda x: x, imap(clean, gzip.open('training_data/ttlg.txt.gz'))))
+    positive_bag = list(filter(lambda x: x, map(clean, gzip.open('training_data/aiw.txt.gz'))))
+    negative_bag = list(filter(lambda x: x, map(clean, gzip.open('training_data/ttlg.txt.gz'))))
 
     train_data, test_data = train_test_split(positive_bag, negative_bag, 0.2)
 
